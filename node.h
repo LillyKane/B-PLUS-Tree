@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <memory>
-#include <string> // TODO remove?
 
 using std::ostream ;
 using std::shared_ptr;
@@ -13,24 +12,27 @@ namespace bptree {
 template <typename T>
 class Node {
 public:
-	Node (int pointerCount=50) ;
+	Node (const int pointer_count=4) ;
+	Node (Node<T>& parent, const int pointer_count=4) ;
 	virtual ~Node () = default ;
 
-	bool isLeaf () const ;
-	int getSize () const ;
-	const T& getKey (int index) const ;
-	const void* const getVal (int index) const ;
+	bool is_leaf () { return false ; }
+	bool is_root () { return parent_ == nullptr ; }
+	int get_size () const { return size_ ; }
+	const T& get_key (int index) const { return keys_.at(index) ; }
+	const void* const get_val (int index) const { return pointers_.at(index) ; }
 
-	void insert (T& key) ;
-	void remove (T& key) ;
+	void insert (const T& key, const shared_ptr<void> value) ;
+	void remove (const T& key) ;
 
 private:
-	int size_ ;
-	shared_ptr<void>[] pointers_ ;
-	T[] keys_ ;
+	int								size_ ;
+	std::vector<shared_ptr<void>>	pointers_ ;
+	std::Vector<T>					keys_ ;
+	Node<T>							parent_ ;
 
 	void balance_children () ;
 
-friend ostream& operator<< (ostream& os, bptreeNode& other);
+friend ostream& operator<< (ostream& os, Node& other);
 };
 }
